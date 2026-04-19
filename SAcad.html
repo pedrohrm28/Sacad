@@ -1,0 +1,1552 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SAcad — Agendamento Acadêmico</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #1A56DB;
+    --primary-600: #1747B8;
+    --primary-50: #EEF4FF;
+    --primary-100: #DCE7FE;
+    --ink: #0F172A;
+    --ink-2: #334155;
+    --muted: #64748B;
+    --line: #E2E8F0;
+    --line-2: #F1F5F9;
+    --bg: #F8FAFC;
+    --card: #FFFFFF;
+    --green: #0E9F6E;
+    --green-50: #E8F7F0;
+    --amber: #B45309;
+    --amber-50: #FEF3C7;
+    --red: #B91C1C;
+    --red-50: #FEE2E2;
+    --radius: 14px;
+    --radius-sm: 10px;
+    --shadow-sm: 0 1px 2px rgba(15, 23, 42, .04), 0 1px 3px rgba(15, 23, 42, .06);
+    --shadow: 0 4px 12px rgba(15, 23, 42, .06), 0 2px 4px rgba(15, 23, 42, .04);
+    --shadow-lg: 0 20px 40px rgba(15, 23, 42, .10), 0 8px 16px rgba(15, 23, 42, .06);
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    color: var(--ink);
+    background: var(--bg);
+    font-size: 15px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+  input, select, textarea { font-family: inherit; font-size: inherit; color: inherit; }
+
+  /* ---------- LOGIN ---------- */
+  .login-wrap {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 32px 20px;
+    background:
+      radial-gradient(circle at 15% 10%, #DCE7FE 0%, transparent 40%),
+      radial-gradient(circle at 90% 90%, #E8F7F0 0%, transparent 45%),
+      var(--bg);
+  }
+  .login-card {
+    width: 100%;
+    max-width: 440px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 40px 36px;
+    box-shadow: var(--shadow-lg);
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+  .brand-mark {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: var(--primary);
+    display: grid;
+    place-items: center;
+    color: white;
+    font-weight: 800;
+    font-size: 18px;
+    letter-spacing: -0.02em;
+    box-shadow: 0 6px 16px rgba(26, 86, 219, 0.35);
+  }
+  .brand-text h1 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  .brand-text p {
+    margin: 2px 0 0;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .login-title {
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin: 0 0 6px;
+  }
+  .login-sub {
+    font-size: 14px;
+    color: var(--muted);
+    margin: 0 0 28px;
+  }
+  .role-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .role-btn {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+    padding: 16px 18px;
+    background: var(--card);
+    border: 1.5px solid var(--line);
+    border-radius: var(--radius);
+    text-align: left;
+    transition: all .2s ease;
+  }
+  .role-btn:hover {
+    border-color: var(--primary);
+    background: var(--primary-50);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow);
+  }
+  .role-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: var(--primary-50);
+    display: grid;
+    place-items: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+  .role-btn:hover .role-icon { background: var(--primary-100); }
+  .role-info strong {
+    display: block;
+    font-size: 15px;
+    font-weight: 600;
+  }
+  .role-info span {
+    display: block;
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+  .role-arrow {
+    margin-left: auto;
+    color: var(--muted);
+    transition: transform .2s ease;
+  }
+  .role-btn:hover .role-arrow { transform: translateX(3px); color: var(--primary); }
+  .login-footer {
+    margin-top: 28px;
+    padding-top: 20px;
+    border-top: 1px solid var(--line-2);
+    font-size: 12px;
+    color: var(--muted);
+    text-align: center;
+  }
+
+  /* ---------- APP SHELL ---------- */
+  .app { display: none; min-height: 100vh; }
+  .app.active { display: block; }
+  .topbar {
+    background: var(--card);
+    border-bottom: 1px solid var(--line);
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    position: sticky;
+    top: 0;
+    z-index: 20;
+  }
+  .topbar .brand { margin: 0; }
+  .topbar .brand-mark { width: 36px; height: 36px; font-size: 15px; border-radius: 10px; }
+  .topbar .brand-text h1 { font-size: 17px; }
+  .topbar .brand-text p { font-size: 11px; }
+  .tabs {
+    display: flex;
+    gap: 4px;
+    margin-left: 24px;
+  }
+  .tab {
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ink-2);
+    transition: all .2s ease;
+    position: relative;
+  }
+  .tab:hover { background: var(--line-2); }
+  .tab.active { background: var(--primary-50); color: var(--primary); }
+  .tab-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    margin-left: 6px;
+    background: var(--red);
+    color: white;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .user-chip {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 10px 6px 6px;
+    border-radius: 30px;
+    background: var(--line-2);
+    font-size: 13px;
+  }
+  .avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: white;
+    display: grid;
+    place-items: center;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .avatar.m { background: #0E9F6E; }
+  .avatar.p { background: #7C3AED; }
+  .logout-btn {
+    font-size: 13px;
+    color: var(--muted);
+    padding: 6px 10px;
+    border-radius: 8px;
+    transition: all .2s ease;
+  }
+  .logout-btn:hover { background: var(--line-2); color: var(--ink); }
+
+  .main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 28px 24px 60px;
+  }
+  .page-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+  .page-title {
+    margin: 0 0 6px;
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  .page-sub {
+    margin: 0;
+    color: var(--muted);
+    font-size: 14px;
+  }
+
+  /* ---------- BUTTONS ---------- */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all .2s ease;
+    border: 1px solid transparent;
+    white-space: nowrap;
+  }
+  .btn-primary {
+    background: var(--primary);
+    color: white;
+  }
+  .btn-primary:hover { background: var(--primary-600); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(26, 86, 219, .3); }
+  .btn-ghost {
+    background: var(--card);
+    border-color: var(--line);
+    color: var(--ink);
+  }
+  .btn-ghost:hover { border-color: var(--primary); color: var(--primary); }
+  .btn-success {
+    background: var(--green);
+    color: white;
+  }
+  .btn-success:hover { background: #0B8C61; }
+  .btn-danger {
+    background: var(--card);
+    border-color: var(--line);
+    color: var(--red);
+  }
+  .btn-danger:hover { background: var(--red-50); border-color: var(--red); }
+  .btn-sm { padding: 6px 12px; font-size: 13px; }
+
+  /* ---------- CARDS / SECTIONS ---------- */
+  .grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
+  }
+  @media (max-width: 900px) {
+    .grid { grid-template-columns: 1fr; }
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+  }
+  .card-header {
+    padding: 18px 20px;
+    border-bottom: 1px solid var(--line-2);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .card-header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  .card-header .hint {
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .card-body { padding: 20px; }
+
+  /* ---------- WEEKLY AGENDA ---------- */
+  .agenda-legend {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .legend-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+    margin-right: 6px;
+    vertical-align: middle;
+  }
+  .legend-dot.free { background: #D1FAE5; border: 1px solid #6EE7B7; }
+  .legend-dot.busy { background: #E2E8F0; border: 1px solid #CBD5E1; }
+  .legend-dot.pending { background: #FEF3C7; border: 1px solid #FCD34D; }
+
+  .week-grid {
+    display: grid;
+    grid-template-columns: 70px repeat(5, 1fr);
+    gap: 1px;
+    background: var(--line-2);
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--line-2);
+  }
+  .week-cell {
+    background: var(--card);
+    padding: 8px 6px;
+    min-height: 48px;
+    font-size: 12px;
+  }
+  .week-head {
+    background: #FAFBFC;
+    font-weight: 600;
+    text-align: center;
+    color: var(--ink-2);
+    padding: 10px 6px;
+    font-size: 12px;
+    letter-spacing: 0.02em;
+  }
+  .week-time {
+    background: #FAFBFC;
+    text-align: right;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+    padding-right: 10px;
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+  }
+  .slot {
+    display: block;
+    width: 100%;
+    padding: 6px 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 500;
+    border: 1px solid transparent;
+    transition: all .15s ease;
+    text-align: left;
+    line-height: 1.25;
+  }
+  .slot.free {
+    background: #D1FAE5;
+    border-color: #6EE7B7;
+    color: #047857;
+  }
+  .slot.free:hover { background: #A7F3D0; transform: scale(1.02); cursor: pointer; }
+  .slot.busy {
+    background: #E2E8F0;
+    border-color: #CBD5E1;
+    color: #475569;
+    cursor: not-allowed;
+  }
+  .slot.pending {
+    background: #FEF3C7;
+    border-color: #FCD34D;
+    color: #92400E;
+  }
+  .slot.mine {
+    background: var(--primary-50);
+    border-color: var(--primary-100);
+    color: var(--primary);
+  }
+  .slot small {
+    display: block;
+    opacity: .75;
+    font-weight: 400;
+    font-size: 10px;
+    margin-top: 1px;
+  }
+
+  /* ---------- REQUEST LIST ---------- */
+  .request {
+    padding: 14px;
+    border-radius: var(--radius-sm);
+    background: #FDFBF5;
+    border: 1px solid #FDE68A;
+    margin-bottom: 10px;
+  }
+  .request:last-child { margin-bottom: 0; }
+  .request-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+  .request-name { font-weight: 600; font-size: 14px; }
+  .request-meta { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .request-topic {
+    font-size: 13px;
+    color: var(--ink-2);
+    margin: 8px 0;
+    padding: 8px 10px;
+    background: var(--card);
+    border-radius: 6px;
+    border: 1px solid var(--line-2);
+  }
+  .request-actions {
+    display: flex;
+    gap: 8px;
+  }
+  .empty {
+    text-align: center;
+    padding: 28px 16px;
+    color: var(--muted);
+    font-size: 13px;
+  }
+  .empty-emoji { font-size: 28px; display: block; margin-bottom: 6px; }
+
+  /* ---------- TEACHER SELECTOR ---------- */
+  .teacher-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 12px;
+  }
+  .teacher-card {
+    padding: 14px;
+    border: 1.5px solid var(--line);
+    border-radius: var(--radius-sm);
+    background: var(--card);
+    cursor: pointer;
+    transition: all .2s ease;
+    text-align: left;
+    width: 100%;
+  }
+  .teacher-card:hover {
+    border-color: var(--primary);
+    background: var(--primary-50);
+  }
+  .teacher-card.selected {
+    border-color: var(--primary);
+    background: var(--primary-50);
+    box-shadow: 0 0 0 3px rgba(26, 86, 219, 0.1);
+  }
+  .teacher-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+  .teacher-name { font-weight: 600; font-size: 14px; }
+  .teacher-role {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 2px 8px;
+    border-radius: 20px;
+    display: inline-block;
+    margin-top: 4px;
+  }
+  .teacher-role.prof { background: #EDE9FE; color: #6D28D9; }
+  .teacher-role.mon { background: #D1FAE5; color: #047857; }
+  .teacher-course { font-size: 12px; color: var(--muted); }
+
+  /* ---------- HISTORY ---------- */
+  .history-list { display: flex; flex-direction: column; gap: 8px; }
+  .history-item {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    transition: all .2s ease;
+  }
+  .history-item:hover { border-color: var(--line); box-shadow: var(--shadow-sm); }
+  .history-date {
+    text-align: center;
+    min-width: 48px;
+    padding: 4px 8px;
+    background: var(--line-2);
+    border-radius: 8px;
+  }
+  .history-date .day { display: block; font-weight: 700; font-size: 16px; }
+  .history-date .mon { display: block; font-size: 10px; text-transform: uppercase; color: var(--muted); letter-spacing: 0.05em; }
+  .history-main strong { display: block; font-size: 14px; }
+  .history-main span { font-size: 12px; color: var(--muted); }
+  .status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .status-confirmed { background: var(--green-50); color: var(--green); }
+  .status-pending { background: var(--amber-50); color: var(--amber); }
+  .status-cancelled { background: var(--red-50); color: var(--red); }
+  .status-completed { background: var(--line-2); color: var(--muted); }
+  .status-declined { background: var(--red-50); color: var(--red); }
+
+  /* ---------- MODAL ---------- */
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.55);
+    backdrop-filter: blur(4px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 20px;
+    animation: fade .2s ease;
+  }
+  .modal-backdrop.active { display: flex; }
+  .modal {
+    background: var(--card);
+    border-radius: 18px;
+    width: 100%;
+    max-width: 460px;
+    box-shadow: var(--shadow-lg);
+    animation: pop .25s cubic-bezier(0.16, 1, 0.3, 1);
+    overflow: hidden;
+  }
+  .modal-header {
+    padding: 22px 24px 0;
+  }
+  .modal-header h3 {
+    margin: 0 0 4px;
+    font-size: 19px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  .modal-header p { margin: 0; font-size: 13px; color: var(--muted); }
+  .modal-body { padding: 20px 24px; }
+  .modal-footer {
+    padding: 16px 24px;
+    background: #FAFBFC;
+    border-top: 1px solid var(--line-2);
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+  .field { margin-bottom: 14px; }
+  .field:last-child { margin-bottom: 0; }
+  .field label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: var(--ink-2);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .field input, .field select, .field textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1.5px solid var(--line);
+    border-radius: 10px;
+    background: var(--card);
+    outline: none;
+    transition: all .2s ease;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(26, 86, 219, 0.1);
+  }
+  .field textarea { resize: vertical; min-height: 72px; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .radio-group { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .radio-btn {
+    padding: 10px;
+    border: 1.5px solid var(--line);
+    border-radius: 10px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all .2s ease;
+    background: var(--card);
+  }
+  .radio-btn:hover { border-color: var(--primary-100); }
+  .radio-btn.active { border-color: var(--primary); background: var(--primary-50); color: var(--primary); }
+
+  .slot-preview {
+    padding: 14px;
+    background: var(--primary-50);
+    border: 1px solid var(--primary-100);
+    border-radius: 10px;
+    margin-bottom: 16px;
+    font-size: 13px;
+  }
+  .slot-preview strong { display: block; color: var(--primary); font-size: 14px; margin-bottom: 3px; }
+
+  /* ---------- TOAST ---------- */
+  .toast-wrap {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 200;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none;
+  }
+  .toast {
+    min-width: 280px;
+    max-width: 380px;
+    padding: 12px 16px;
+    background: var(--ink);
+    color: white;
+    border-radius: 12px;
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    animation: slideIn .3s cubic-bezier(0.16, 1, 0.3, 1);
+    pointer-events: auto;
+  }
+  .toast.success { background: #064E3B; }
+  .toast.error { background: #7F1D1D; }
+  .toast.info { background: #1E3A8A; }
+  .toast.exiting { animation: slideOut .25s ease forwards; }
+  .toast .t-icon { font-size: 18px; }
+
+  @keyframes slideIn { from { transform: translateX(400px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+  @keyframes slideOut { to { transform: translateX(400px); opacity: 0; } }
+  @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes pop { from { transform: scale(0.94); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+  /* ---------- STATS BAR ---------- */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .stat {
+    padding: 14px 16px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+  }
+  .stat-value {
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  .stat-label {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  /* Responsive */
+  @media (max-width: 720px) {
+    .topbar { padding: 10px 14px; gap: 10px; flex-wrap: wrap; }
+    .tabs { margin-left: 0; order: 3; width: 100%; overflow-x: auto; }
+    .main { padding: 20px 14px 40px; }
+    .week-grid { grid-template-columns: 54px repeat(5, 1fr); font-size: 11px; }
+    .slot { font-size: 10px; padding: 5px 6px; }
+    .slot small { font-size: 9px; }
+    .brand-text p { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ LOGIN SCREEN ============ -->
+<div id="loginScreen" class="login-wrap">
+  <div class="login-card">
+    <div class="brand">
+      <div class="brand-mark">SA</div>
+      <div class="brand-text">
+        <h1>SAcad</h1>
+        <p>Agendamento Acadêmico</p>
+      </div>
+    </div>
+    <h2 class="login-title">Entrar na plataforma</h2>
+    <p class="login-sub">Selecione um perfil para simular o acesso à plataforma.</p>
+    <div class="role-buttons">
+      <button class="role-btn" data-role="aluno">
+        <div class="role-icon">🎓</div>
+        <div class="role-info">
+          <strong>Entrar como Aluno</strong>
+          <span>Maria Clara · Engenharia de Software</span>
+        </div>
+        <span class="role-arrow">→</span>
+      </button>
+      <button class="role-btn" data-role="professor">
+        <div class="role-icon">👩‍🏫</div>
+        <div class="role-info">
+          <strong>Entrar como Professor</strong>
+          <span>Prof. Ana Souza · Cálculo I</span>
+        </div>
+        <span class="role-arrow">→</span>
+      </button>
+      <button class="role-btn" data-role="monitor">
+        <div class="role-icon">📚</div>
+        <div class="role-info">
+          <strong>Entrar como Monitor</strong>
+          <span>João Pedro · POO</span>
+        </div>
+        <span class="role-arrow">→</span>
+      </button>
+    </div>
+    <div class="login-footer">
+      Protótipo executável · Etapa 3 · Requisitos de Software
+    </div>
+  </div>
+</div>
+
+<!-- ============ APP SHELL ============ -->
+<div id="app" class="app">
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark">SA</div>
+      <div class="brand-text">
+        <h1>SAcad</h1>
+        <p>Agendamento Acadêmico</p>
+      </div>
+    </div>
+    <nav class="tabs" id="tabs"></nav>
+    <div class="user-chip">
+      <div class="avatar" id="userAvatar">MC</div>
+      <span id="userName">Maria Clara</span>
+    </div>
+    <button class="logout-btn" onclick="logout()">Sair</button>
+  </header>
+  <main class="main" id="mainContent"></main>
+</div>
+
+<!-- ============ MODAL ============ -->
+<div class="modal-backdrop" id="modalBackdrop">
+  <div class="modal" id="modal"></div>
+</div>
+
+<!-- ============ TOASTS ============ -->
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+/* ============================================================
+   SAcad — State & Mock Data
+============================================================ */
+const DAYS = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta'];
+const DAYS_SHORT = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex'];
+const HOURS = [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18];
+
+let state = {
+  currentUser: null, // { id, name, role, initials }
+  activeTab: null,
+  selectedProviderId: null,
+  users: {
+    aluno_1: { id: 'aluno_1', name: 'Maria Clara', role: 'aluno', initials: 'MC' },
+    prof_ana: { id: 'prof_ana', name: 'Prof. Ana Souza', role: 'professor', course: 'Cálculo I', initials: 'AS' },
+    prof_carlos: { id: 'prof_carlos', name: 'Prof. Carlos Lima', role: 'professor', course: 'POO', initials: 'CL' },
+    mon_joao: { id: 'mon_joao', name: 'Monitor João Pedro', role: 'monitor', course: 'POO', initials: 'JP' },
+  },
+  // slots: disponibilidade cadastrada pelos professores/monitores
+  // status: 'free' | 'pending' | 'booked'
+  slots: [
+    { id: 's1', providerId: 'prof_ana', day: 0, hour: 14, duration: 60, modality: 'presencial', status: 'booked', studentId: 'aluno_1', topic: 'Dúvidas sobre integrais' },
+    { id: 's2', providerId: 'prof_ana', day: 2, hour: 10, duration: 60, modality: 'remoto', status: 'free' },
+    { id: 's3', providerId: 'prof_ana', day: 4, hour: 16, duration: 60, modality: 'presencial', status: 'free' },
+    { id: 's4', providerId: 'prof_carlos', day: 1, hour: 9, duration: 60, modality: 'presencial', status: 'pending', studentId: 'aluno_1', topic: 'Revisão de polimorfismo' },
+    { id: 's5', providerId: 'prof_carlos', day: 3, hour: 15, duration: 60, modality: 'remoto', status: 'free' },
+    { id: 's6', providerId: 'mon_joao', day: 0, hour: 16, duration: 45, modality: 'presencial', status: 'free' },
+    { id: 's7', providerId: 'mon_joao', day: 2, hour: 14, duration: 45, modality: 'remoto', status: 'free' },
+  ],
+  // histórico: agendamentos passados
+  history: [
+    { id: 'h1', providerId: 'prof_ana', studentId: 'aluno_1', date: '12 mar', day: 'Seg', hour: 14, topic: 'Limites e continuidade', status: 'completed' },
+    { id: 'h2', providerId: 'mon_joao', studentId: 'aluno_1', date: '05 mar', day: 'Qua', hour: 14, topic: 'Herança e interfaces', status: 'completed' },
+    { id: 'h3', providerId: 'prof_carlos', studentId: 'aluno_1', date: '28 fev', day: 'Qui', hour: 15, topic: 'Padrões de projeto', status: 'cancelled' },
+  ],
+};
+
+/* ============================================================
+   AUTH
+============================================================ */
+document.querySelectorAll('.role-btn').forEach(btn => {
+  btn.addEventListener('click', () => login(btn.dataset.role));
+});
+
+function login(role) {
+  if (role === 'aluno') state.currentUser = state.users.aluno_1;
+  else if (role === 'professor') state.currentUser = state.users.prof_ana;
+  else if (role === 'monitor') state.currentUser = state.users.mon_joao;
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('app').classList.add('active');
+  state.activeTab = role === 'aluno' ? 'agendar' : 'agenda';
+  state.selectedProviderId = null;
+  render();
+  toast(`Bem-vinda, ${state.currentUser.name.split(' ')[0]}! 👋`, 'info');
+}
+
+function logout() {
+  state.currentUser = null;
+  document.getElementById('loginScreen').style.display = 'grid';
+  document.getElementById('app').classList.remove('active');
+}
+
+/* ============================================================
+   RENDER — topbar + main
+============================================================ */
+function render() {
+  const u = state.currentUser;
+  if (!u) return;
+
+  // avatar + name
+  const av = document.getElementById('userAvatar');
+  av.textContent = u.initials;
+  av.className = 'avatar ' + (u.role === 'professor' ? 'p' : u.role === 'monitor' ? 'm' : '');
+  document.getElementById('userName').textContent = u.name;
+
+  // tabs
+  const tabs = document.getElementById('tabs');
+  let tabDefs;
+  if (u.role === 'aluno') {
+    const pendingMine = state.slots.filter(s => s.studentId === u.id && (s.status === 'pending' || s.status === 'booked')).length;
+    tabDefs = [
+      { id: 'agendar', label: '📅 Agendar' },
+      { id: 'meus', label: '🕐 Meus Agendamentos', badge: pendingMine },
+      { id: 'historico', label: '📜 Histórico' },
+    ];
+  } else {
+    const pending = state.slots.filter(s => s.providerId === u.id && s.status === 'pending').length;
+    tabDefs = [
+      { id: 'agenda', label: '📅 Minha Agenda' },
+      { id: 'solicitacoes', label: '🔔 Solicitações', badge: pending },
+      { id: 'historico', label: '📜 Histórico' },
+    ];
+  }
+  tabs.innerHTML = tabDefs.map(t => `
+    <button class="tab ${state.activeTab === t.id ? 'active' : ''}" onclick="setTab('${t.id}')">
+      ${t.label}${t.badge ? `<span class="tab-badge">${t.badge}</span>` : ''}
+    </button>
+  `).join('');
+
+  // main content
+  const main = document.getElementById('mainContent');
+  if (u.role === 'aluno') {
+    if (state.activeTab === 'agendar') main.innerHTML = renderStudentBooking();
+    else if (state.activeTab === 'meus') main.innerHTML = renderStudentMine();
+    else if (state.activeTab === 'historico') main.innerHTML = renderHistory();
+  } else {
+    if (state.activeTab === 'agenda') main.innerHTML = renderProviderAgenda();
+    else if (state.activeTab === 'solicitacoes') main.innerHTML = renderProviderRequests();
+    else if (state.activeTab === 'historico') main.innerHTML = renderHistory();
+  }
+}
+
+function setTab(tabId) {
+  state.activeTab = tabId;
+  render();
+}
+
+/* ============================================================
+   STUDENT — Booking
+============================================================ */
+function renderStudentBooking() {
+  const providers = Object.values(state.users).filter(x => x.role === 'professor' || x.role === 'monitor');
+  const selected = state.selectedProviderId ? state.users[state.selectedProviderId] : null;
+
+  return `
+    <div class="page-header">
+      <div>
+        <h2 class="page-title">Agendar horário</h2>
+        <p class="page-sub">Escolha um professor ou monitor e selecione um horário livre na agenda.</p>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom: 20px;">
+      <div class="card-header">
+        <h3>1. Escolha o profissional</h3>
+        <span class="hint">${providers.length} disponíveis</span>
+      </div>
+      <div class="card-body">
+        <div class="teacher-list">
+          ${providers.map(p => `
+            <button class="teacher-card ${state.selectedProviderId === p.id ? 'selected' : ''}" onclick="selectProvider('${p.id}')">
+              <div class="teacher-head">
+                <div class="avatar ${p.role === 'professor' ? 'p' : 'm'}">${p.initials}</div>
+                <div>
+                  <div class="teacher-name">${p.name}</div>
+                  <div class="teacher-course">${p.course}</div>
+                </div>
+              </div>
+              <span class="teacher-role ${p.role === 'professor' ? 'prof' : 'mon'}">${p.role}</span>
+            </button>
+          `).join('')}
+        </div>
+      </div>
+    </div>
+
+    ${selected ? `
+      <div class="card">
+        <div class="card-header">
+          <h3>2. Agenda de ${selected.name}</h3>
+          <div class="agenda-legend">
+            <span><span class="legend-dot free"></span>Livre</span>
+            <span><span class="legend-dot pending"></span>Minha solicitação</span>
+            <span><span class="legend-dot busy"></span>Ocupado</span>
+          </div>
+        </div>
+        <div class="card-body">
+          ${renderWeekGrid(selected.id, 'student')}
+        </div>
+      </div>
+    ` : `
+      <div class="card">
+        <div class="card-body">
+          <div class="empty">
+            <span class="empty-emoji">👆</span>
+            Selecione um profissional acima para ver os horários disponíveis.
+          </div>
+        </div>
+      </div>
+    `}
+  `;
+}
+
+function selectProvider(id) {
+  state.selectedProviderId = id;
+  render();
+}
+
+function renderStudentMine() {
+  const u = state.currentUser;
+  const mine = state.slots.filter(s => s.studentId === u.id);
+  const pending = mine.filter(s => s.status === 'pending');
+  const confirmed = mine.filter(s => s.status === 'booked');
+
+  return `
+    <div class="page-header">
+      <div>
+        <h2 class="page-title">Meus agendamentos</h2>
+        <p class="page-sub">Acompanhe as solicitações pendentes e os horários confirmados.</p>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><div class="stat-value">${confirmed.length}</div><div class="stat-label">Confirmados</div></div>
+      <div class="stat"><div class="stat-value">${pending.length}</div><div class="stat-label">Aguardando resposta</div></div>
+      <div class="stat"><div class="stat-value">${state.history.filter(h => h.studentId === u.id).length}</div><div class="stat-label">No histórico</div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>Próximos agendamentos</h3>
+        <span class="hint">${mine.length} ${mine.length === 1 ? 'item' : 'itens'}</span>
+      </div>
+      <div class="card-body">
+        ${mine.length === 0 ? `
+          <div class="empty">
+            <span class="empty-emoji">📭</span>
+            Nenhum agendamento ainda. Vá em <strong>Agendar</strong> para começar.
+          </div>
+        ` : `
+          <div class="history-list">
+            ${mine.map(s => {
+              const prov = state.users[s.providerId];
+              const statusLabel = s.status === 'booked' ? 'confirmado' : 'pendente';
+              const statusClass = s.status === 'booked' ? 'status-confirmed' : 'status-pending';
+              return `
+                <div class="history-item">
+                  <div class="history-date">
+                    <span class="day">${String(s.hour).padStart(2, '0')}h</span>
+                    <span class="mon">${DAYS_SHORT[s.day]}</span>
+                  </div>
+                  <div class="history-main">
+                    <strong>${prov.name}</strong>
+                    <span>${s.topic || '—'} · ${s.modality} · ${s.duration}min</span>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 10px;">
+                    <span class="status-pill ${statusClass}">${s.status === 'booked' ? '✅' : '⏳'} ${statusLabel}</span>
+                    <button class="btn btn-danger btn-sm" onclick="cancelBooking('${s.id}')">Cancelar</button>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        `}
+      </div>
+    </div>
+  `;
+}
+
+/* ============================================================
+   PROVIDER — Agenda & Requests
+============================================================ */
+function renderProviderAgenda() {
+  const u = state.currentUser;
+  const mySlots = state.slots.filter(s => s.providerId === u.id);
+  const free = mySlots.filter(s => s.status === 'free').length;
+  const booked = mySlots.filter(s => s.status === 'booked').length;
+  const pending = mySlots.filter(s => s.status === 'pending').length;
+
+  return `
+    <div class="page-header">
+      <div>
+        <h2 class="page-title">Minha agenda da semana</h2>
+        <p class="page-sub">Gerencie seus horários de atendimento. Clique em um slot para ver detalhes.</p>
+      </div>
+      <button class="btn btn-primary" onclick="openAddSlotModal()">+ Adicionar slot</button>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><div class="stat-value">${free}</div><div class="stat-label">Horários livres</div></div>
+      <div class="stat"><div class="stat-value">${booked}</div><div class="stat-label">Confirmados</div></div>
+      <div class="stat"><div class="stat-value">${pending}</div><div class="stat-label">Aguardando</div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>Semana atual</h3>
+        <div class="agenda-legend">
+          <span><span class="legend-dot free"></span>Livre</span>
+          <span><span class="legend-dot pending"></span>Pendente</span>
+          <span><span class="legend-dot busy"></span>Confirmado</span>
+        </div>
+      </div>
+      <div class="card-body">
+        ${renderWeekGrid(u.id, 'provider')}
+      </div>
+    </div>
+  `;
+}
+
+function renderProviderRequests() {
+  const u = state.currentUser;
+  const pending = state.slots.filter(s => s.providerId === u.id && s.status === 'pending');
+
+  return `
+    <div class="page-header">
+      <div>
+        <h2 class="page-title">Solicitações pendentes</h2>
+        <p class="page-sub">Confirme ou recuse as solicitações de alunos para seus horários.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>Aguardando sua resposta</h3>
+        <span class="hint">${pending.length} ${pending.length === 1 ? 'pendência' : 'pendências'}</span>
+      </div>
+      <div class="card-body">
+        ${pending.length === 0 ? `
+          <div class="empty">
+            <span class="empty-emoji">🎉</span>
+            Tudo em dia! Nenhuma solicitação aguardando resposta.
+          </div>
+        ` : pending.map(s => {
+          const student = state.users[s.studentId];
+          return `
+            <div class="request">
+              <div class="request-top">
+                <div>
+                  <div class="request-name">${student.name}</div>
+                  <div class="request-meta">
+                    ${DAYS[s.day]}, ${String(s.hour).padStart(2, '0')}:00 · ${s.duration}min · ${s.modality}
+                  </div>
+                </div>
+                <span class="status-pill status-pending">⏳ pendente</span>
+              </div>
+              <div class="request-topic">
+                <strong style="font-weight: 500;">Assunto:</strong> ${s.topic || 'Não informado'}
+              </div>
+              <div class="request-actions">
+                <button class="btn btn-success btn-sm" onclick="confirmRequest('${s.id}')">✅ Confirmar</button>
+                <button class="btn btn-danger btn-sm" onclick="declineRequest('${s.id}')">❌ Recusar</button>
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    </div>
+  `;
+}
+
+/* ============================================================
+   HISTORY
+============================================================ */
+function renderHistory() {
+  const u = state.currentUser;
+  const items = state.history.filter(h => {
+    if (u.role === 'aluno') return h.studentId === u.id;
+    return h.providerId === u.id;
+  });
+
+  return `
+    <div class="page-header">
+      <div>
+        <h2 class="page-title">Histórico</h2>
+        <p class="page-sub">Agendamentos passados, concluídos e cancelados.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>Registros</h3>
+        <span class="hint">${items.length} ${items.length === 1 ? 'registro' : 'registros'}</span>
+      </div>
+      <div class="card-body">
+        ${items.length === 0 ? `
+          <div class="empty">
+            <span class="empty-emoji">📜</span>
+            Seu histórico está vazio.
+          </div>
+        ` : `
+          <div class="history-list">
+            ${items.map(h => {
+              const other = u.role === 'aluno' ? state.users[h.providerId] : state.users[h.studentId];
+              const statusMap = {
+                completed: { cls: 'status-completed', label: '✓ concluído' },
+                cancelled: { cls: 'status-cancelled', label: '✕ cancelado' },
+                declined: { cls: 'status-declined', label: '✕ recusado' },
+              };
+              const st = statusMap[h.status] || statusMap.completed;
+              const [day, mon] = h.date.split(' ');
+              return `
+                <div class="history-item">
+                  <div class="history-date">
+                    <span class="day">${day}</span>
+                    <span class="mon">${mon}</span>
+                  </div>
+                  <div class="history-main">
+                    <strong>${other.name}</strong>
+                    <span>${h.topic} · ${h.day} ${String(h.hour).padStart(2, '0')}:00</span>
+                  </div>
+                  <span class="status-pill ${st.cls}">${st.label}</span>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        `}
+      </div>
+    </div>
+  `;
+}
+
+/* ============================================================
+   WEEK GRID
+============================================================ */
+function renderWeekGrid(providerId, mode) {
+  const slots = state.slots.filter(s => s.providerId === providerId);
+  // cells keyed by `${day}-${hour}`
+  const map = {};
+  slots.forEach(s => {
+    map[`${s.day}-${s.hour}`] = s;
+  });
+
+  let html = '<div class="week-grid">';
+  html += '<div class="week-cell week-head"></div>';
+  DAYS_SHORT.forEach(d => html += `<div class="week-cell week-head">${d}</div>`);
+
+  HOURS.forEach(hour => {
+    html += `<div class="week-cell week-time">${String(hour).padStart(2, '0')}h</div>`;
+    for (let day = 0; day < 5; day++) {
+      const s = map[`${day}-${hour}`];
+      html += '<div class="week-cell">';
+      if (s) {
+        if (mode === 'student') {
+          const u = state.currentUser;
+          if (s.status === 'free') {
+            html += `<button class="slot free" onclick="openBookModal('${s.id}')">
+              ${String(s.hour).padStart(2, '0')}:00
+              <small>${s.modality}</small>
+            </button>`;
+          } else if (s.studentId === u.id) {
+            const label = s.status === 'booked' ? '✅ meu' : '⏳ pendente';
+            html += `<div class="slot mine">
+              ${label}
+              <small>${s.modality}</small>
+            </div>`;
+          } else {
+            html += `<div class="slot busy">
+              ocupado
+              <small>${s.modality}</small>
+            </div>`;
+          }
+        } else {
+          // provider view
+          if (s.status === 'free') {
+            html += `<button class="slot free" onclick="removeSlot('${s.id}')">
+              livre
+              <small>${s.modality} · ${s.duration}min</small>
+            </button>`;
+          } else if (s.status === 'pending') {
+            const st = state.users[s.studentId];
+            html += `<div class="slot pending">
+              ⏳ ${st.name.split(' ')[0]}
+              <small>${s.modality}</small>
+            </div>`;
+          } else {
+            const st = state.users[s.studentId];
+            html += `<div class="slot busy">
+              ${st.name.split(' ')[0]}
+              <small>${s.modality}</small>
+            </div>`;
+          }
+        }
+      }
+      html += '</div>';
+    }
+  });
+  html += '</div>';
+  return html;
+}
+
+/* ============================================================
+   MODAL HELPERS
+============================================================ */
+function openModal(html) {
+  document.getElementById('modal').innerHTML = html;
+  document.getElementById('modalBackdrop').classList.add('active');
+}
+function closeModal() {
+  document.getElementById('modalBackdrop').classList.remove('active');
+}
+document.getElementById('modalBackdrop').addEventListener('click', e => {
+  if (e.target.id === 'modalBackdrop') closeModal();
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+});
+
+/* ============================================================
+   BOOK MODAL (student clicks free slot)
+============================================================ */
+function openBookModal(slotId) {
+  const s = state.slots.find(x => x.id === slotId);
+  const prov = state.users[s.providerId];
+  openModal(`
+    <div class="modal-header">
+      <h3>Solicitar agendamento</h3>
+      <p>Confirme os detalhes e informe o assunto da reunião.</p>
+    </div>
+    <div class="modal-body">
+      <div class="slot-preview">
+        <strong>${prov.name}</strong>
+        📅 ${DAYS[s.day]}, ${String(s.hour).padStart(2, '0')}:00 · ${s.duration} min · ${s.modality}
+      </div>
+      <div class="field">
+        <label>Assunto da reunião</label>
+        <textarea id="topicInput" placeholder="Ex.: Dúvidas sobre a lista 3, revisão de prova, orientação de TCC..." autofocus></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="submitBooking('${slotId}')">📅 Solicitar agendamento</button>
+    </div>
+  `);
+  setTimeout(() => document.getElementById('topicInput')?.focus(), 100);
+}
+
+function submitBooking(slotId) {
+  const topic = document.getElementById('topicInput').value.trim();
+  if (!topic) {
+    toast('Informe o assunto da reunião.', 'error');
+    return;
+  }
+  const s = state.slots.find(x => x.id === slotId);
+  s.status = 'pending';
+  s.studentId = state.currentUser.id;
+  s.topic = topic;
+  closeModal();
+  toast('Agendamento solicitado com sucesso! 🔔', 'success');
+  render();
+}
+
+/* ============================================================
+   ADD SLOT MODAL (provider)
+============================================================ */
+let addSlotState = { day: 0, hour: 14, duration: 60, modality: 'presencial' };
+
+function openAddSlotModal() {
+  addSlotState = { day: 0, hour: 14, duration: 60, modality: 'presencial' };
+  openModal(`
+    <div class="modal-header">
+      <h3>Adicionar horário de atendimento</h3>
+      <p>Configure um novo slot de disponibilidade na sua agenda.</p>
+    </div>
+    <div class="modal-body">
+      <div class="field-row">
+        <div class="field">
+          <label>Dia da semana</label>
+          <select id="slotDay" onchange="addSlotState.day = parseInt(this.value)">
+            ${DAYS.map((d, i) => `<option value="${i}">${d}</option>`).join('')}
+          </select>
+        </div>
+        <div class="field">
+          <label>Horário de início</label>
+          <select id="slotHour" onchange="addSlotState.hour = parseInt(this.value)">
+            ${HOURS.map(h => `<option value="${h}" ${h === 14 ? 'selected' : ''}>${String(h).padStart(2, '0')}:00</option>`).join('')}
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label>Duração</label>
+        <select id="slotDuration" onchange="addSlotState.duration = parseInt(this.value)">
+          <option value="30">30 minutos</option>
+          <option value="45">45 minutos</option>
+          <option value="60" selected>60 minutos</option>
+          <option value="90">90 minutos</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Modalidade</label>
+        <div class="radio-group">
+          <button type="button" class="radio-btn active" data-mod="presencial" onclick="pickModality(this, 'presencial')">🏫 Presencial</button>
+          <button type="button" class="radio-btn" data-mod="remoto" onclick="pickModality(this, 'remoto')">💻 Remoto</button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveSlot()">+ Adicionar slot</button>
+    </div>
+  `);
+}
+
+function pickModality(el, mod) {
+  addSlotState.modality = mod;
+  el.parentElement.querySelectorAll('.radio-btn').forEach(b => b.classList.toggle('active', b.dataset.mod === mod));
+}
+
+function saveSlot() {
+  const u = state.currentUser;
+  // check conflict
+  const conflict = state.slots.find(s =>
+    s.providerId === u.id && s.day === addSlotState.day && s.hour === addSlotState.hour
+  );
+  if (conflict) {
+    toast('Já existe um slot nesse dia e horário.', 'error');
+    return;
+  }
+  state.slots.push({
+    id: 's' + Date.now(),
+    providerId: u.id,
+    day: addSlotState.day,
+    hour: addSlotState.hour,
+    duration: addSlotState.duration,
+    modality: addSlotState.modality,
+    status: 'free',
+  });
+  closeModal();
+  toast('Horário adicionado à sua agenda! ✅', 'success');
+  render();
+}
+
+function removeSlot(slotId) {
+  const s = state.slots.find(x => x.id === slotId);
+  openModal(`
+    <div class="modal-header">
+      <h3>Remover este horário?</h3>
+      <p>${DAYS[s.day]}, ${String(s.hour).padStart(2, '0')}:00 · ${s.modality}</p>
+    </div>
+    <div class="modal-body" style="padding-top: 4px;">
+      <p style="color: var(--muted); font-size: 14px; margin: 0;">
+        O slot será removido da sua agenda. Alunos não poderão mais solicitá-lo.
+      </p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()">Manter</button>
+      <button class="btn btn-danger" onclick="confirmRemoveSlot('${slotId}')">Remover</button>
+    </div>
+  `);
+}
+
+function confirmRemoveSlot(slotId) {
+  state.slots = state.slots.filter(s => s.id !== slotId);
+  closeModal();
+  toast('Horário removido.', 'info');
+  render();
+}
+
+/* ============================================================
+   REQUEST ACTIONS (provider)
+============================================================ */
+function confirmRequest(slotId) {
+  const s = state.slots.find(x => x.id === slotId);
+  s.status = 'booked';
+  const student = state.users[s.studentId];
+  toast(`Agendamento com ${student.name.split(' ')[0]} confirmado! ✅`, 'success');
+  render();
+}
+
+function declineRequest(slotId) {
+  const s = state.slots.find(x => x.id === slotId);
+  const student = state.users[s.studentId];
+  // move to history, restore as free
+  state.history.unshift({
+    id: 'h' + Date.now(),
+    providerId: s.providerId,
+    studentId: s.studentId,
+    date: getTodayDate(),
+    day: DAYS_SHORT[s.day],
+    hour: s.hour,
+    topic: s.topic,
+    status: 'declined',
+  });
+  s.status = 'free';
+  delete s.studentId;
+  delete s.topic;
+  toast(`Solicitação de ${student.name.split(' ')[0]} recusada.`, 'info');
+  render();
+}
+
+/* ============================================================
+   CANCEL BOOKING (student)
+============================================================ */
+function cancelBooking(slotId) {
+  const s = state.slots.find(x => x.id === slotId);
+  const prov = state.users[s.providerId];
+  openModal(`
+    <div class="modal-header">
+      <h3>Cancelar agendamento?</h3>
+      <p>Com ${prov.name}</p>
+    </div>
+    <div class="modal-body" style="padding-top: 4px;">
+      <div class="slot-preview" style="background: var(--red-50); border-color: #FECACA;">
+        <strong style="color: var(--red);">${s.topic || 'Sem assunto'}</strong>
+        📅 ${DAYS[s.day]}, ${String(s.hour).padStart(2, '0')}:00 · ${s.modality}
+      </div>
+      <p style="color: var(--muted); font-size: 14px; margin: 0;">
+        O horário voltará a ficar livre para outros alunos.
+      </p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()">Manter agendamento</button>
+      <button class="btn btn-danger" onclick="confirmCancel('${slotId}')">Sim, cancelar</button>
+    </div>
+  `);
+}
+
+function confirmCancel(slotId) {
+  const s = state.slots.find(x => x.id === slotId);
+  state.history.unshift({
+    id: 'h' + Date.now(),
+    providerId: s.providerId,
+    studentId: s.studentId,
+    date: getTodayDate(),
+    day: DAYS_SHORT[s.day],
+    hour: s.hour,
+    topic: s.topic,
+    status: 'cancelled',
+  });
+  s.status = 'free';
+  delete s.studentId;
+  delete s.topic;
+  closeModal();
+  toast('Agendamento cancelado.', 'info');
+  render();
+}
+
+/* ============================================================
+   TOAST
+============================================================ */
+function toast(message, type = 'info') {
+  const wrap = document.getElementById('toastWrap');
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  const icon = type === 'success' ? '✅' : type === 'error' ? '❌' : '🔔';
+  el.innerHTML = `<span class="t-icon">${icon}</span><span>${message}</span>`;
+  wrap.appendChild(el);
+  setTimeout(() => {
+    el.classList.add('exiting');
+    setTimeout(() => el.remove(), 300);
+  }, 3200);
+}
+
+/* ============================================================
+   UTILS
+============================================================ */
+function getTodayDate() {
+  const months = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
+  const d = new Date();
+  return `${String(d.getDate()).padStart(2, '0')} ${months[d.getMonth()]}`;
+}
+</script>
+</body>
+</html>
